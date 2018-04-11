@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Speech to Text</title>
+</head>
+
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+    <button onclick="startUploading()">Start Recording</button>
+    <button onclick="stopUploading()">Stop Recording</button>
+    <script>
+        (function (window) {                       
+            var socket = io('http://localhost');
+
+            socket.on('open', function () { 
+                
+                if (!navigator.getUserMedia)
+                    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+                        navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+                if (navigator.getUserMedia) {
+                    navigator.getUserMedia({ audio: true }, success, function (e) {
+                        alert('Error capturing audio.');
+                    });
+                } else alert('getUserMedia not supported in this browser.');
+
+                var recording = false;
+
+                window.startUploading = function () {
+                    recording = true;
+                }
+
+                window.stopUploading = function () {
+                    recording = false;
+                    socket.emit('end');                    
+                }
+
+                function success(e) {
+                    audioContext = window.AudioContext || window.webkitAudioContext;
+                    context = new audioContext();
+
+                    // the sample rate is in context.sampleRate
+                    audioInput = context.createMediaStreamSource(e);
+
+                    var bufferSize = 2048;
+                    recorder = context.createScriptProcessor(bufferSize, 1, 1);
+
+                    recorder.onaudioprocess = function (e) {
+                        if (!recording) return;
+                        console.log('recording');
+                        var left = e.inputBuffer.getChannelData(0);
+                        socket.emit('stream', convertoFloat32ToInt16(left))                       
+                    }
+
+                    audioInput.connect(recorder)
+                    recorder.connect(context.destination);
+                }
+
+                function convertoFloat32ToInt16(buffer) {
+                    var l = buffer.length;
+                    var buf = new Int16Array(l)
+
+                    while (l--) {
+                        buf[l] = buffer[l] * 0xFFFF;    //convert to 16 bit
+                    }
+                    return buf.buffer
+                }
+            });
+        })(this);
+
+    </script>
+</body>
+
+</html>
