@@ -1,0 +1,22 @@
+{
+  "name": "stt-gateway",
+  "version": "1.0.0",
+  "description": "Gateway server for speech to text module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manoj-ahir/STT-Gateway.git"
+  },
+  "author": "Manoj Ahir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manoj-ahir/STT-Gateway/issues"
+  },
+  "homepage": "https://github.com/manoj-ahir/STT-Gateway#readme",
+  "dependencies": {
+    "socket.io": "^2.1.0"
+  }
+}
