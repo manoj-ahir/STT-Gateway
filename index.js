@@ -1,9 +1,9 @@
 const app = require('http').createServer(handler)
-const io = require('socket.io')(app);
+const clientSocket = require('socket.io')(app);
 const fs = require('fs');
-const WebSocket = require('ws');
+var sttSocket = require("socket.io-client")('ws://localhost:8080'); //to connect to server2.js or change the url to STT Server 
 
-const ws = new WebSocket('ws://localhost:8080');
+sttSocket.on('connect', function () { });
 
 app.listen(80);
 
@@ -19,15 +19,19 @@ function handler(req, res) {
     });
 }
 
-io.on('connection', function (socket) {
+clientSocket.on('connection', function (socket) {
   socket.emit('open')
 
   socket.on('stream', function (data) {
-    console.log('data');    
+    console.log(data);
+    sttSocket.emit('stream', data);
   });
 
   socket.on('end', function () {
-    console.log('recording stopped');
+    console.log('recording stopped');    
+    socket.emit('end', function(data){
+      console.log(data);
+    });
   });
 
 });

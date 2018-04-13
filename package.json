@@ -18,6 +18,6 @@
   "homepage": "https://github.com/manoj-ahir/STT-Gateway#readme",
   "dependencies": {
     "socket.io": "^2.1.0",
-    "ws": "^5.1.1"
+    "socket.io-client": "^2.1.0"
   }
 }
